@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CREATE GROUP</title>
+</head>
+<body>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="group_name">Group Name:</label>
+        <input type="text" name="group_name" id="group_name">
+        
+        <p>Choose your favorite users to add to this group:</p>
+        <ul>
+            {% for participant in participants %}
+                <li>
+                    <input type="checkbox" name="participants" value="{{participant.id}}"> {{participant.username}}
+                </li>
+            {% endfor %}
+        </ul>
+        
+        <input type="submit" value="Create Group">
+    </form>
+</body>
+</html>

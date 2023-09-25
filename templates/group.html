@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group : {{group.group_name}}</title>
+</head>
+<body>
+    {% for user in group.users.all %}
+        <ul>
+            <a href="#" >{{forloop.counter}} :: {{user.username}}<br>
+        </ul>
+    {% endfor %}
+</body>
+</html>
