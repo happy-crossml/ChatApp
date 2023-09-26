@@ -152,16 +152,15 @@
                         <div class="control">
                             <button class="btn btn-success" id="chat-message-submit">Submit</button>
                         </div>
-                    </div>
-
+                    </div>ss
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-{{group.id|json_script:"json-username"}}
-{{group_name.group_name|json_script:"json-username-receiver"}}
+{{selected_group.id|json_script:"json-username"}}
+{{selected_group.group_name|json_script:"json-username-receiver"}}
 {{request.user.username|json_script:"json-message-username"}}
 
 <script>
@@ -169,29 +168,26 @@
     const loggedin_user = JSON.parse(document.getElementById('json-message-username').textContent);
     const group_name = JSON.parse(document.getElementById('json-username-receiver').textContent);
 
-    console.log("group_id:", group_id);
-    console.log("group_name:", group_name);
-    console.log("loggedin_user:", loggedin_user);
+    const group_socket = new WebSocket('ws://' + window.location.host + '/ws/group/' + group_id + '/');
 
-    const socket = new WebSocket('ws://' + window.location.host + '/ws/' + group_id + '/');
-
-    socket.onopen = function(e){
+    group_socket.onopen = function(e){
         console.log("CONNECTION ESTABLISHED");
     }
 
-    socket.onclose = function(e){
+    group_socket.onclose = function(e){
         console.log("CONNECTION LOST");
     }
 
-    socket.onerror = function(e){
+    group_socket.onerror = function(e){
         console.log("ERROR OCCURED");
     }
-
-    socket.onmessage = function(e){
+    
+    group_socket.onmessage = function(e){
         const data = JSON.parse(e.data);
         const messageContainer = document.querySelector('#chat-body');
+        messageContainer.insertAdjacentHTML('beforeend', `<tr><td><p class="bg-success p-2 mt-2 mr-5 shadow-sm text-white float-right rounded">${data.message}</p></td></tr>`);
 
-        if (data.username == message_username) {
+        if (data.username ==loggedin_user) {
             messageContainer.insertAdjacentHTML('beforeend', `<tr><td><p class="bg-success p-2 mt-2 mr-5 shadow-sm text-white float-right rounded">${data.message}</p></td></tr>`);
         } else {
             messageContainer.insertAdjacentHTML('beforeend', `<tr><td><p class="bg-primary p-2 mt-2 mr-5 shadow-sm text-white float-left rounded">${data.message}</p></td></tr>`);
@@ -202,7 +198,7 @@
         const message_input = document.querySelector('#message_input');
         const message = message_input.value;
 
-        socket.send(JSON.stringify({
+        group_socket.send(JSON.stringify({
             'message':message,
             'username':loggedin_user,
             'receiver':group_name
@@ -213,11 +209,8 @@
 
 </script>
 
-
 {% endblock %}
 {% block javascript %}
-{% comment %} <script src="{% static 'js/chat.js' %}"></script>
-<script src="{% static 'js/group.js' %}"></script>  {% endcomment %}
 <script src="{% static 'js/online_status.js' %}"></script>
 <script src="{% static 'js/notify.js' %}"></script>
 {% endblock %}

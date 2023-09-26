@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 
-from django.shortcuts import render
 from django.contrib.auth.models import User
 from .models import GroupChat
 from firebase_admin import db
@@ -11,7 +10,6 @@ User = get_user_model()
 
 # Create your views here.
 def index(request):
-
     user = request.user
     user = User.objects.filter(username=user.username)
     user_groups = GroupChat.objects.filter(users__in=user)
@@ -46,9 +44,8 @@ def chatPage(request, username):
         message_objs.append({
             'sender': message_data['sender'],
             'message': message_data['message'],
-            # 'timestamp': message_data['timestamp'],
         })
-
+    print(message_objs)
     return render(request, 'main_chat.html', context={'user': user_obj, 'users': users, 'messages': message_objs,   'user_groups':user_groups})
 
 
@@ -67,30 +64,6 @@ def create_group(request):
     return render(request, 'create_group.html', {'participants': participants})
 
 
-# def group_chat(request, *args, **kwargs):
-
-#     user = request.user
-#     user = User.objects.filter(username=user.username)
-#     user_groups = GroupChat.objects.filter(users__in=user) 
-
-#     group_id = kwargs.get('group_id')
-#     group = GroupChat.objects.filter(id=group_id).get()  
-    
-#     users = User.objects.exclude(username=request.user.username)
-
-#     thread_name=""
-#     db_ref = db.reference('/messages')
-#     query_result = db_ref.order_by_child('thread_name').equal_to(thread_name).get()
-#     message_objs = []
-#     for message_id, message_data in query_result.items():
-#         message_objs.append({
-#             'sender': message_data['sender'],
-#             'message': message_data['message'],
-#             # 'timestamp': message_data['timestamp'],
-#         })
-
-#     return render(request, 'group_chat.html', {'group': group, 'users':users, 'user_groups':user_groups})
-
 
 def group_chat(request, group_name):
 
@@ -100,12 +73,13 @@ def group_chat(request, group_name):
     
     # Get the group object for the selected group_name
     selected_group = GroupChat.objects.get(group_name=group_name)
-    # breakpoint()
+    
     # Get all users excluding the current user
     users = User.objects.exclude(username=current_user.username)
+    
     message_objs = []
 
-    thread_name = selected_group.group_name
+    thread_name = f'group_chat_{selected_group.id}'
     
     # Retrieve messages for the selected group from Firebase
     if thread_name:
@@ -116,10 +90,7 @@ def group_chat(request, group_name):
             message_objs.append({
                 'sender': message_data['sender'],
                 'message': message_data['message'],
-                # 'timestamp': message_data['timestamp'],
             })
-
-    # Render the group chat page with the context data
     return render(request, 'group_chat.html', context={
         'current_user': current_user,
         'user_groups': user_groups,
@@ -127,17 +98,3 @@ def group_chat(request, group_name):
         'users': users,
         'messages': message_objs,
     })
-
-
-def group_list(request):
-    user = request.user
-    user = User.objects.filter(username=user.username)
-
-    user_groups = GroupChat.objects.filter(users__in=user)
-
-    return render(request, 'all_groups.html', {'user_groups': user_groups})
-
-
-
-def room(request, room_name):
-    return render(request, "chat/room.html", {"room_name": room_name})
