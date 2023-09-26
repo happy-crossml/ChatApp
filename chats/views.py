@@ -29,7 +29,7 @@ def chatPage(request, username):
     user_groups = GroupChat.objects.filter(users__in=user)
 
 
-    user_obj = User.objects.get(username=username)
+    user_obj = User.objects.get(username=username)  
     users = User.objects.exclude(username=request.user.username)
    
     if request.user.id > user_obj.id:

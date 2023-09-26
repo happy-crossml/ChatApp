@@ -4,7 +4,6 @@ from channels.db import database_sync_to_async
 from chats.models import UserProfileModel, ChatNotification
 from django.contrib.auth.models import User
 from chats.models import *
-from django.shortcuts import get_object_or_404
 
 import firebase_admin
 from firebase_admin import credentials, db
@@ -14,13 +13,11 @@ cred = credentials.Certificate("credentials.json")
 firebase_admin.initialize_app(cred, {'databaseURL':'https://chat-app-397405-default-rtdb.asia-southeast1.firebasedatabase.app/'})
 
 
-from channels.generic.websocket import WebsocketConsumer
-
-
 class PersonalChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         my_id = self.scope['user'].id
         other_user_id = self.scope['url_route']['kwargs']['id']
+
         if int(my_id) > int(other_user_id):
             self.room_name = f'{my_id}-{other_user_id}'
         else:
@@ -85,8 +82,10 @@ class PersonalChatConsumer(AsyncWebsocketConsumer):
 
 
 class GroupChatConsumer(AsyncWebsocketConsumer):
-   
+    print("Control")
     async def connect(self):
+        print("connecting")
+        my_id = self.scope['user'].id
         group_id = self.scope['url_route']['kwargs']['group_id']
         self.group_name = f'group_chat_{group_id}'
 
@@ -95,7 +94,7 @@ class GroupChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
-
+        
     async def disconnect(self, code):
         await self.channel_layer.group_discard(
             self.group_name,
@@ -105,7 +104,9 @@ class GroupChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data['message']
-        username = data['username']
+        username = data['username',   "username:",username]
+
+        print("message:",message,)
 
         self.save_message(username, self.group_name, message)
 
@@ -206,4 +207,3 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
         else:
             userprofile.online_status = False
             userprofile.save()
-
