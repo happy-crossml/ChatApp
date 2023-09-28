@@ -26,7 +26,6 @@
                                 <td><a href="{% url 'chat' username=user.username %}">{{user.username}}</a></td>
                             </tr>
                             {% endfor %}
-
                             {% for group_name in user_groups %}
                             <tr>
                                 <td><img src="{% static 'assets/dp.png' %}" alt="" class="profile-image rounded-circle">
@@ -37,10 +36,13 @@
                         </tbody>
                     </table>
                 </div>
-
             </div>
         </div>
     </div>
 </div>
 
 {% endblock %}
+<h1 href="{% url 'accounts:login' %}">>please Login here</h1>
+<h1 href="{% url 'accounts:login' %}">>please Login here</h1>
+<h1 href="{% url 'accounts:register' %}">>if you have not account: Register here</h1>
+    

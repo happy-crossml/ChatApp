@@ -19,12 +19,9 @@ personal_socket.onerror = function(e){
 personal_socket.onmessage = function(e){
     const data = JSON.parse(e.data);
     const messageContainer = document.querySelector('#chat-body');
+    messageContainer.insertAdjacentHTML('beforeend', `<tr><td><p class="bg-success p-2 mt-2 mr-5 shadow-sm text-white float-right rounded">${data.message}</p></td></tr>`);
+
     
-    if (data.username == message_username) {
-        messageContainer.insertAdjacentHTML('beforeend', `<tr><td><p class="bg-success p-2 mt-2 mr-5 shadow-sm text-white float-right rounded">${data.message}</p></td></tr>`);
-    } else {
-        messageContainer.insertAdjacentHTML('beforeend', `<tr><td><p class="bg-primary p-2 mt-2 mr-5 shadow-sm text-white float-left rounded">${data.message}</p></td></tr>`);
-    }
 }
 
 document.querySelector('#chat-message-submit').onclick = function(e){

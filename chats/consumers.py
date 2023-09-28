@@ -8,7 +8,6 @@ from chats.models import *
 import firebase_admin
 from firebase_admin import credentials, db
 
-# Initialize Firebase Admin SDK with
 cred = credentials.Certificate("credentials.json")
 firebase_admin.initialize_app(cred, {'databaseURL':'https://chat-app-397405-default-rtdb.asia-southeast1.firebasedatabase.app/'})
 
@@ -132,30 +131,6 @@ class GroupChatConsumer(AsyncWebsocketConsumer):
         db_ref.push(new_message)
 
 
-class NotificationConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        my_id = self.scope['user'].id
-        self.room_group_name = f'{my_id}'
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
-        await self.accept()
-
-    async def disconnect(self, code):
-        self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
-
-    async def send_notification(self, event):
-        data = json.loads(event.get('value'))
-        count = data['count']
-        await self.send(text_data=json.dumps({
-            'count':count
-        }))
-        
-        
 class OnlineStatusConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_group_name = 'user'

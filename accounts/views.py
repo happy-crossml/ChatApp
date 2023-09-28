@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
-
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 User = get_user_model()
@@ -26,7 +26,7 @@ def register(request):
     else:
         form = SignUpForm()
 
-    return render(request, 'accounts/register.html', {'form': form})
+    return render(request, 'accounts/register.html', {'form': form})    
 
 
 def loginView(request):
@@ -54,8 +54,8 @@ def loginView(request):
 
     else:
         return render(request, 'accounts/login.html')
-
-
+                                                                                                                                                                                                                                                                    
+@login_required
 def logout_view(request):
     logout(request)
-    return redirect('account/login')    
+    return redirect('/')    
